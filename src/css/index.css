@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: "powerline";
+  src: url("../fonts/Fura Mono Regular Nerd Font Complete Mono.otf");
+}
+
+body, .main {
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  justify-content: space-between;
+  align-items: stretch;
+  background: #111;
+  color: #fff;
+  font-family: powerline;
+  font-size: 16;
+}
+
+.main {
+  align-items: center;
+}
+
+.h {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-self: stretch;
+  background: #ccc;
+  color: #111;
+  font-family: powerline;
+}
+
+.term {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  width: 80ex;
+  height: 20ex;
+  border: 1px solid #333;
+  border-radius: 16px;
+}
+
+.ps1 {
+  display: flex;
+  flex-flow: row nowrap;
+  padding: 1em;
+  list-style: none;
+  margin: 0;
+}
+
+.part {
+  padding: 0;
+  border: none;
+  margin: 0;
+}
+
+.part--drag {
+
+}

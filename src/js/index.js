@@ -1,25 +1,40 @@
 import {el, list, mount} from 'redom'
 
 
-class Li {
-  constructor () {
-    this.el = el('li')
+class Part {
+  constructor() {
+    this.el = el('li.part')
   }
-  
-  update (i) {
-    this.el.textContent = `Item ${i}`
+
+  update({text, style}) {
+    this.el.style = style
+    this.el.textContent = text
   }
 }
 
-const ul = list('ul', Li)
+class Line {
+  constructor({cls}={cls:'ps1'}) {
+    this.el = list(`ul.${cls}`, Part)
+  }
+
+  update(...d) {
+    this.el.update(...d)
+  }
+}
+
+const head = el('header.h', 'tart')
+const foot = el('footer.f')
+const cmdln = el(Line)
+const term = el('div.term', cmdln)
+const main = el('div.main', [head, term, foot])
 
 // update with data
-ul.update([1, 2, 3])
+cmdln.update([{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}])
 
 // mount to DOM
-mount(document.body, ul)
+mount(document.body, main)
 
 // schedule another update
 setTimeout(() => {
-  ul.update([2, 3, 4, 5])
+  cmdln.update([{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}])
 }, 1000)
