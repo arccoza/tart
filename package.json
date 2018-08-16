@@ -1,0 +1,10 @@
+{
+  "name": "tart",
+  "version": "0.0.1",
+  "description": "Terminal art, visual terminal styling.",
+  "main": "index.js",
+  "repository": "github.com/arccoza/tart",
+  "author": "Adrien de Pierres",
+  "license": "MIT",
+  "private": true
+}
