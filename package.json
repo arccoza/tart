@@ -6,5 +6,8 @@
   "repository": "github.com/arccoza/tart",
   "author": "Adrien de Pierres",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "redom": "^3.12.7"
+  }
 }
