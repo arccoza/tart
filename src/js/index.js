@@ -32,20 +32,39 @@ class Button {
   }
 }
 
+class Terminal {
+  constructor() {
+    this.el = el('section.term', [
+      this.h = el('header.term__h', [el('span', '\ufaac'), el('span', 'term'), el('span', '')]),
+      this.lineB = el(Line),
+      this.f = el('footer.term__f', [
+        this.lineA = el(Line),
+        this.btnAdd = el('div.button', ' Add part'), //\uf067
+      ]),
+    ])
+  }
+
+  update({lineData}) {
+    this.lineA.update(lineData)
+    this.lineB.update(lineData)
+  }
+}
+
 const head = el('header.h', 'tart')
 const foot = el('footer.f')
-const cmdln = el(Line)
-const bAdd = el('div.button', 'Add component')
-const term = el('div.term', [cmdln, bAdd])
+// const cmdln = el(Line)
+// const bAdd = el('div.button', 'Add component')
+// const term = el('div.term', [cmdln, bAdd])
+const term = el(Terminal)
 const main = el('div.main', [head, term, foot])
 
 // update with data
-cmdln.update([{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}])
+term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
 // mount to DOM
 mount(document.body, main)
 
 // schedule another update
 setTimeout(() => {
-  cmdln.update([{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}])
+  term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
 }, 1000)
