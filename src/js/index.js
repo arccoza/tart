@@ -25,7 +25,8 @@ class Line {
 const head = el('header.h', 'tart')
 const foot = el('footer.f')
 const cmdln = el(Line)
-const term = el('div.term', cmdln)
+const bAdd = el('div.button', 'Add component')
+const term = el('div.term', [cmdln, bAdd])
 const main = el('div.main', [head, term, foot])
 
 // update with data
