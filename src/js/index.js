@@ -3,7 +3,7 @@ import {el, list, mount} from 'redom'
 
 class Part {
   constructor() {
-    this.el = el('li.part')
+    this.el = el('li.part.part--drag')
   }
 
   update({text, style}) {
@@ -19,6 +19,16 @@ class Line {
 
   update(...d) {
     this.el.update(...d)
+  }
+}
+
+class Button {
+  constructor({text='button'}={}) {
+    this.el = el('div.button', text)
+  }
+
+  update({text}) {
+    this.el.textContent = text
   }
 }
 
