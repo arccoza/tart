@@ -7,6 +7,12 @@
   src: url("../fonts/Fura Mono Regular Nerd Font Complete Mono.otf");
 }
 
+html {
+  display: flex;
+  flex-flow: column;
+  min-height: 100vh;
+}
+
 body, .main {
   display: flex;
   flex-flow: column;
