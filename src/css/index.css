@@ -78,6 +78,23 @@ body, .main {
   margin: 0 0.2em;
 }
 
+.part--dragging {
+  opacity: 0.99;
+  /*border: 2px solid red;*/
+  z-index: 100;
+}
+.part--dragging::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  bottom: -1px;
+  right: -1px;
+  border: 2px solid #E61111; /*11E6C4*/
+  border-radius: 1000px;
+}
+
+
 .term__h {
   display: flex;
   flex-flow: row nowrap;

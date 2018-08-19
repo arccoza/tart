@@ -3,12 +3,42 @@ import {el, list, mount} from 'redom'
 
 class Part {
   constructor() {
-    this.el = el('li.part.part--drag')
+    this.el = el('li.part.part--drag', {draggable: false})
+    this._draggable()
+  }
+
+  _draggable() {
+    var ixy = null
+    var dxy = null
+    this.el.addEventListener('mousedown', ev => {
+      var mvh = null
+      var uph  = null
+      // ev.dataTransfer.setData('text/plain', '')
+      // ev.target.style.opacity = 0.99
+      ev.target.classList.add('part--dragging')
+      // ev.dataTransfer.effectAllowed = 'move'
+      ixy = [ev.clientX, ev.clientY]
+      document.addEventListener('mousemove', mvh = ev => {
+        ev.preventDefault()
+        dxy = [ev.clientX - ixy[0], ev.clientY - ixy[1]]
+        // console.log(dxy)
+        this.el.style.transform = `translate(${dxy[0]}px, ${dxy[1]}px)`
+      })
+
+      document.addEventListener('mouseup', uph = ev => {
+        this.el.classList.remove('part--dragging')
+        this.el.style.transform = `none`
+        if (mvh)
+          document.removeEventListener('mousemove', mvh)
+        document.removeEventListener('mousemove', uph)
+      })
+    })
   }
 
   update({text, style}) {
-    this.el.style = style
+    // this.el.style = style
     this.el.textContent = text
+
   }
 }
 
