@@ -91,7 +91,17 @@ body, .main {
   justify-content: center;
   border: 1px dashed rgba(255, 255, 255, 0.1);
   border-width: 1px 0 0 0;
+}
+
+.term__tools {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
   margin: 0 0 -1em 0;
+}
+.term__tools > .button {
+  margin: 0 0.2em;
 }
 
 .button {
