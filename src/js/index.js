@@ -1,7 +1,47 @@
 import {el, list, mount} from 'redom'
 import flyd from 'flyd'
 import colours from './colour_data.json'
+console.log(colours)
 
+
+class Swatch {
+  constructor(d) {
+    this.el = el('li.swatch',
+      this.colour = el('div.swatch__colour'),
+      this.name = el('div.swatch__name'),
+      this.value = el('div.swatch__value')
+    )
+
+    this.update(d)
+  }
+
+  update({colourId='7', name='Grey', hexString='#c0c0c0'}={}) {
+    this.colour.style.backgroundColor = hexString
+    this.name.textContent = name
+    this.value.textContent = colourId
+  }
+}
+
+class Palette {
+  constructor() {
+    this.el = el('div.modal.modal--hidden',
+      el('div.palette',
+        el('header.palette__h'),
+        this.swatches = list('ul.palette__swatches', Swatch)
+      )
+    )
+  }
+
+  update({hidden=true, colours=undefined}={}) {
+    if (hidden)
+      this.el.classList.add('modal--hidden')
+    else
+      this.el.classList.remove('modal--hidden')
+    
+    if (colours)
+      this.swatches.update(colours)
+  }
+}
 
 class Part {
   constructor() {
@@ -86,13 +126,15 @@ class Terminal {
 
 const head = el('header.h', 'tart')
 const foot = el('footer.f')
+const pal = el(Palette)
 // const cmdln = el(Line)
 // const bAdd = el('div.button', 'Add component')
 // const term = el('div.term', [cmdln, bAdd])
 const term = el(Terminal)
-const main = el('div.main', [head, term, foot])
+const main = el('div.main', [pal, head, term, foot])
 
 // update with data
+pal.update({hidden: true, colours: colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
 // mount to DOM
