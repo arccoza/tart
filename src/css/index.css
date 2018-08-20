@@ -7,6 +7,23 @@
   src: url("../fonts/Fura Mono Regular Nerd Font Complete Mono.otf");
 }
 
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 1000px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.75);
+}
+
 html {
   display: flex;
   flex-flow: column;
