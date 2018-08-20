@@ -15,10 +15,10 @@ class Swatch {
     this.update(d)
   }
 
-  update({colourId='7', name='Grey', hexString='#c0c0c0'}={}) {
+  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}) {
     this.colour.style.backgroundColor = hexString
     this.name.textContent = name
-    this.value.textContent = colourId
+    this.value.textContent = `${colorId} - ${hexString}`
   }
 }
 
