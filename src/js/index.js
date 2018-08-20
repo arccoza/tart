@@ -1,4 +1,6 @@
 import {el, list, mount} from 'redom'
+import flyd from 'flyd'
+import colours from './colour_data.json'
 
 
 class Part {
@@ -38,7 +40,6 @@ class Part {
   update({text, style}) {
     // this.el.style = style
     this.el.textContent = text
-
   }
 }
 
