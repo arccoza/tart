@@ -186,6 +186,7 @@ body, .main {
   border-radius: 16px;
   margin: 1em;
   overflow: hidden;
+  text-transform: uppercase;
 }
 
 .swatch__colour {
