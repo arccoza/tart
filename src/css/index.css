@@ -139,3 +139,60 @@ body, .main {
   font-size: 14px;
   /*font-weight: bold;*/
 }
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+}
+
+.modal--hidden {
+  display: none;
+}
+
+.palette {
+  position: relative;
+  max-width: 80ex;
+  align-self: center;
+  margin: 2em 0;
+  overflow-y: scroll;
+}
+
+.palette__swatches {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+}
+
+.swatch {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  min-width: 100px;
+  background: #222;
+  list-style: none;
+  border: 2px solid #333;
+  border-radius: 16px;
+  margin: 1em;
+  overflow: hidden;
+}
+
+.swatch__colour {
+  height: 2em;
+}
+
+.swatch__name, .swatch__value {
+  align-self: center;
+  font-size: 0.75em;
+}
