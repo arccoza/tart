@@ -237,10 +237,10 @@ body, .main {
   display: flex;
   flex-flow: column;
   flex: 1;
-  min-width: 100px;
+  min-width: 120px;
   background: #222;
   list-style: none;
-  border: 2px solid #333;
+  border: 1px solid #333;
   border-radius: 16px;
   margin: 1em;
   overflow: hidden;
