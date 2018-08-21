@@ -144,7 +144,7 @@ const term = el(Terminal)
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
-pal.update({hidden: true, colours: colours})
+pal.update({hidden: false, colours: colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
 // mount to DOM
