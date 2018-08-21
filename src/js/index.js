@@ -98,8 +98,14 @@ class Line {
 }
 
 class Button {
-  constructor({text='button'}={}) {
-    this.el = el('div.button', text)
+  constructor() {
+    this.el = el('div.button')
+
+    this.el.addEventListener('mousedown', ev => {
+      this.el.classList.add('button--pressed')
+      ev.preventDefault()
+    })
+    this.el.addEventListener('mouseup', ev => this.el.classList.remove('button--pressed'))
   }
 
   update({text}) {
