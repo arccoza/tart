@@ -1,7 +1,8 @@
 import {el, list, mount} from 'redom'
 import flyd from 'flyd'
 import colours from './colour_data.json'
-console.log(colours)
+import {selfie} from './selfie.js'
+// console.log(colours)
 
 
 class Swatch {
@@ -112,26 +113,32 @@ class Part {
 class Line {
   constructor({cls}={cls:'ps1'}) {
     this.el = list(`ul.${cls}`, Part)
+    
+    selfie(this)
   }
 
-  update(...d) {
-    this.el.update(...d)
+  update({el}, ...d) {
+    el.update(...d)
   }
 }
 
 class Button {
   constructor() {
     this.el = el('div.button')
-
-    this.el.addEventListener('mousedown', ev => {
-      this.el.classList.add('button--pressed')
-      ev.preventDefault()
-    })
-    this.el.addEventListener('mouseup', ev => this.el.classList.remove('button--pressed'))
+    selfie(this)
+    this.init()
   }
 
-  update({text}) {
-    this.el.textContent = text
+  init({el}) {
+    el.addEventListener('mousedown', ev => {
+      el.classList.add('button--pressed')
+      ev.preventDefault()
+    })
+    el.addEventListener('mouseup', ev => el.classList.remove('button--pressed'))
+  }
+
+  update({el}, {text}) {
+    el.textContent = text
   }
 }
 
@@ -163,6 +170,7 @@ const pal = el(Palette)
 // const bAdd = el('div.button', 'Add component')
 // const term = el('div.term', [cmdln, bAdd])
 const term = el(Terminal)
+// console.log(Object.getOwnPropertyNames(term.constructor.prototype))
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
