@@ -121,7 +121,7 @@ class Terminal {
       this.f = el('footer.term__f', [
         this.lineA = el(Line),
         this.btns = el('div.term__tools', [
-          this.btnAdd = el('div.button', ' Add part'), //\uf067
+          this.btnAdd = el(Button, ' Add part'), //\uf067
           // this.btnEdit = el('div.button.button--edit', '\uf8ea Edit'), //\uf8ea
         ]),
       ]),
