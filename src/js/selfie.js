@@ -5,7 +5,6 @@ const selfie = (that, labels=null) => {
   }
   if (!labels.length)
     return
-  // console.log(labels)
 
   return labels.reduce((that, l) => {
     var fn = that[l]
