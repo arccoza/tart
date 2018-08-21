@@ -22,6 +22,28 @@ class Swatch {
   }
 }
 
+class Pill {
+  constructor(props) {
+    this.el = el('li.pill')
+    this.update(props)
+  }
+
+  update({active=null}={}) {
+    if (active != null)
+      this.el.classList.add('.pill--active')
+  }
+}
+
+class Pills {
+  constructor() {
+    this.el = list('ul.pills', Pill)
+  }
+
+  update(...d) {
+    this.el.update(...d)
+  }
+}
+
 class Palette {
   constructor() {
     this.el = el('div.modal.modal--hidden',
