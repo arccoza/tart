@@ -27,7 +27,7 @@ class Palette {
     this.el = el('div.modal.modal--hidden',
       el('div.palette',
         el('header.palette__h',
-          el('ul.pills', el('li.pill', 'Foreground'), el('li.pill', 'Background')),
+          el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
         ),
         this.swatches = list('ul.palette__swatches', Swatch),
       )
