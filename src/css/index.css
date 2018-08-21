@@ -183,14 +183,6 @@ body, .main {
   display: none;
 }
 
-.pill:first-child {
-  border-radius: 1000px 0 0 1000px;
-}
-
-.pill:last-child {
-  border-radius: 0 1000px 1000px 0;
-}
-
 .palette {
   position: relative;
   max-width: 80ex;
@@ -219,15 +211,23 @@ body, .main {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  height: 2em;
+  height: 2.5em;
   background: rgba(255, 255, 255, 0.25);
   list-style: none;
-  padding: 0 1em;
-  /*font-size: 14px;*/
+  padding: 0 1.5em;
+  font-size: 14px;
   /*border: 1px solid #666;*/
 }
 
-.pill--selected {
+.pill:first-child {
+  border-radius: 1000px 0 0 1000px;
+}
+
+.pill:last-child {
+  border-radius: 0 1000px 1000px 0;
+}
+
+.pill--active {
   background: linear-gradient(to right bottom, #d811e6, #cb15dc, #be18d1, #b119c7, #a51abc);
   border-color: transparent;
 }
