@@ -25,23 +25,41 @@ class Swatch {
 
 class Pill {
   constructor(props) {
-    this.el = el('li.pill')
-    this.update(props)
+    const self = this
+    self.el = el('li.pill')
+    self.onClick = flyd.stream()
+    self.onActivate = self.onClick.map(ev => self._idx, self.onClick)
+    self.el.addEventListener('click', self.onClick)
+    self.update(props)
   }
 
-  update({active=null}={}) {
+  update({active=null, text=null}={}, i) {
+    const self = this
+    self._idx = i
     if (active != null)
-      this.el.classList.add('.pill--active')
+      self.el.classList.add('pill--active')
+
+    if (text != null)
+      self.el.textContent = text
   }
 }
 
 class Pills {
   constructor() {
-    this.el = list('ul.pills', Pill)
+    const self = this
+    self.el = el('ul.pills')
+    self.list = list(self.el, Pill)
+    self.onActivate = flyd.stream()
+    flyd.on(ev => console.log('on:: ', ev), self.onActivate)
   }
 
   update(...d) {
-    this.el.update(...d)
+    const self = this
+    self.list.update(...d)
+    var m = flyd.merge(...self.list.views.map(el => el.onActivate))
+    if (self._toActivate)
+      self._toActivate.end(true)
+    self._toActivate = flyd.combine(m => self.onActivate(m()), [m])
   }
 }
 
@@ -50,22 +68,26 @@ class Palette {
     this.el = el('div.modal.modal--hidden',
       el('div.palette',
         el('header.palette__h',
-          el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
+          // el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
+          this.pills = el(Pills)
         ),
         this.swatches = list('ul.palette__swatches', Swatch),
       )
     )
 
-    this.el.addEventListener('click', ev => this.update({hidden:true}))
+    // this.el.addEventListener('click', ev => this.update({hidden:true}))
   }
 
-  update({hidden=true, colours=undefined}={}) {
-    if (hidden)
+  update({hidden=true, pills=null, colours=null}={}) {
+    if (hidden === true)
       this.el.classList.add('modal--hidden')
-    else
+    else if (hidden === false)
       this.el.classList.remove('modal--hidden')
+
+    if (pills != null)
+      this.pills.update(pills())
     
-    if (colours)
+    if (colours != null)
       this.swatches.update(colours)
   }
 }
@@ -174,7 +196,11 @@ const term = el(Terminal)
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
-pal.update({hidden: false, colours: colours})
+var pills = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}])
+flyd.combine((act, pills) => {
+  console.log(act(), pills())
+}, [pal.activated, pills])
+pal.update({hidden: false, pills, colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
 // mount to DOM
@@ -183,4 +209,5 @@ mount(document.body, main)
 // schedule another update
 setTimeout(() => {
   term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-}, 1000)
+  pal.update({hidden: false, pills, colours})
+}, 5000)
