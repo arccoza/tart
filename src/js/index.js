@@ -1,5 +1,5 @@
 import {el, list, mount} from 'redom'
-import flyd from 'flyd'
+import flyd from './flyd.js'
 import colours from './colour_data.json'
 import {selfie} from './selfie.js'
 // console.log(colours)
@@ -56,10 +56,32 @@ class Pills {
   update(...d) {
     const self = this
     self.list.update(...d)
-    var m = flyd.merge(...self.list.views.map(el => el.onActivate))
-    if (self._toActivate)
+    var acts = self.list.views.map(el => el.onActivate)
+    var m = flyd.merge(...acts)
+    // console.log('m:: ', self.list.views.map(el => el.onActivate))
+
+    // var mm = flyd.immediate(flyd.combine((...a) => {
+    //   var [ch, me, ...s] = a.reverse()
+    //   if (ch.length)
+    //     me(ch[0]())
+    // }, acts))
+
+    var mm = flyd.mergeN(acts.length, ...acts)
+    console.log('m:: ', mm)
+
+    if (self._toActivate) {
       self._toActivate.end(true)
-    self._toActivate = flyd.combine(m => self.onActivate(m()), [m])
+      // self._toActivate.deps = [m]
+    }
+    // else {
+      self._toActivate = flyd.combine(m => {
+        // if (m() != null && !d[0][m()].active)
+          self.onActivate(m())
+      }, [mm])
+    // }
+    console.log('---')
+    console.dir(self._toActivate)
+    console.log('---') 
   }
 }
 
@@ -196,7 +218,7 @@ const term = el(Terminal)
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
-var pills = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}])
+var pills = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
 flyd.combine((act, pills) => {
   console.log(act(), pills())
 }, [pal.activated, pills])
@@ -207,7 +229,7 @@ term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c
 mount(document.body, main)
 
 // schedule another update
-setTimeout(() => {
-  term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-  pal.update({hidden: false, pills, colours})
-}, 5000)
+// setTimeout(() => {
+//   term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
+//   pal.update({hidden: false, pills: pills([...pills(), {text:'Wha2?'}]), colours})
+// }, 5000)
