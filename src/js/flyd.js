@@ -3,20 +3,11 @@ import flyd from 'flyd'
 
 flyd.mergeN = function(n, ...sn) {
   return flyd.curryN(n, function() {
-    console.log('sn:: ', sn)
     var s = flyd.immediate(
       flyd.combine(function(...args) {
-        console.log('args:: ', args)
-        var [changed, self, ...sn] = args.reverse()
-        if (changed[0]) {
+        var [self, changed] = args.slice(sn.length)
+        if (changed.length)
           self(changed[0]())
-        }
-        // else if (s1.hasVal) {
-        //   self(s1.val)
-        // }
-        // else if (s2.hasVal) {
-        //   self(s2.val)
-        // }
       }, sn)
     )
     
