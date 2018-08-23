@@ -28,7 +28,7 @@ class Pill {
     const self = this
     self.el = el('li.pill')
     self.onClick = flyd.stream()
-    self.onActivate = self.onClick.map(ev => self._idx, self.onClick)
+    self.onActivate = self.onClick.map(ev => (ev.preventDefault(), self._idx), self.onClick)
     self.el.addEventListener('click', self.onClick)
     self.update(props)
   }
@@ -36,8 +36,10 @@ class Pill {
   update({active=null, text=null}={}, i) {
     const self = this
     self._idx = i
-    if (active != null)
+    if (active)
       self.el.classList.add('pill--active')
+    else
+      self.el.classList.remove('pill--active')
 
     if (text != null)
       self.el.textContent = text
@@ -53,35 +55,18 @@ class Pills {
     flyd.on(ev => console.log('on:: ', ev), self.onActivate)
   }
 
-  update(...d) {
-    const self = this
-    self.list.update(...d)
-    var acts = self.list.views.map(el => el.onActivate)
-    var m = flyd.merge(...acts)
-    // console.log('m:: ', self.list.views.map(el => el.onActivate))
+  update({pillData}) {
+    const self = this, pd = pillData()
+    self.list.update(pd)
+    const acts = self.list.views.map(el => el.onActivate)
+    const ms = flyd.mergeN(acts.length, ...acts)
 
-    // var mm = flyd.immediate(flyd.combine((...a) => {
-    //   var [ch, me, ...s] = a.reverse()
-    //   if (ch.length)
-    //     me(ch[0]())
-    // }, acts))
-
-    var mm = flyd.mergeN(acts.length, ...acts)
-    console.log('m:: ', mm)
-
-    if (self._toActivate) {
-      self._toActivate.end(true)
-      // self._toActivate.deps = [m]
-    }
-    // else {
-      self._toActivate = flyd.combine(m => {
-        // if (m() != null && !d[0][m()].active)
-          self.onActivate(m())
-      }, [mm])
-    // }
-    console.log('---')
-    console.dir(self._toActivate)
-    console.log('---') 
+    if (self._onActivate)
+      self._onActivate.deps.forEach(s => s.end()), self._onActivate.end(true)
+    self._onActivate = flyd.on(i => {
+      if (!pd[i].active)
+        self.onActivate(i), pillData(pd.map((v, j) => (v.active = j == i, v)))
+    }, ms)
   }
 }
 
@@ -100,14 +85,17 @@ class Palette {
     // this.el.addEventListener('click', ev => this.update({hidden:true}))
   }
 
-  update({hidden=true, pills=null, colours=null}={}) {
+  update({hidden=null, pills=null, colours=null}={}) {
+    hidden = hidden != null ? hidden : this.hidden != null ? this.hidden : false
+    this.hidden = hidden
+
     if (hidden === true)
       this.el.classList.add('modal--hidden')
     else if (hidden === false)
       this.el.classList.remove('modal--hidden')
 
     if (pills != null)
-      this.pills.update(pills())
+      this.pills.update({pillData:pills})
     
     if (colours != null)
       this.swatches.update(colours)
@@ -219,9 +207,9 @@ const main = el('div.main', [pal, head, term, foot])
 
 // update with data
 var pills = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
-flyd.combine((act, pills) => {
-  console.log(act(), pills())
-}, [pal.activated, pills])
+flyd.combine((pills) => {
+  pal.update({pills})
+}, [pills])
 pal.update({hidden: false, pills, colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
@@ -229,7 +217,7 @@ term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c
 mount(document.body, main)
 
 // schedule another update
-// setTimeout(() => {
-//   term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-//   pal.update({hidden: false, pills: pills([...pills(), {text:'Wha2?'}]), colours})
-// }, 5000)
+setTimeout(() => {
+  term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
+  pal.update({hidden: false, pills: pills([...pills(), {text:'Wha2?'}]), colours})
+}, 5000)
