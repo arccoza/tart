@@ -104,7 +104,7 @@ class Palette {
     // this.el.addEventListener('click', ev => this.update({hidden:true}))
   }
 
-  update({hidden=null, pills=null, colours=null}={}) {
+  update({hidden=null, pillData=null, colours=null}={}) {
     hidden = hidden != null ? hidden : this.hidden != null ? this.hidden : false
     this.hidden = hidden
 
@@ -113,8 +113,8 @@ class Palette {
     else if (hidden === false)
       this.el.classList.remove('modal--hidden')
 
-    if (pills != null)
-      this.pills.update({pillData:pills})
+    if (pillData != null)
+      this.pills.update({pillData})
     
     if (colours != null)
       this.swatches.update(colours)
