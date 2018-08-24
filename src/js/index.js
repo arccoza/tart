@@ -7,11 +7,7 @@ import {Palette, Terminal} from './components.js'
 const head = el('header.h', 'tart')
 const foot = el('footer.f')
 const pal = el(Palette)
-// const cmdln = el(Line)
-// const bAdd = el('div.button', 'Add component')
-// const term = el('div.term', [cmdln, bAdd])
 const term = el(Terminal)
-// console.log(Object.getOwnPropertyNames(term.constructor.prototype))
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
