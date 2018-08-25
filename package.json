@@ -8,7 +8,11 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "flyd": "^0.2.8",
     "redom": "^3.12.7"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3"
   }
 }
