@@ -2,6 +2,10 @@ import {el, list, mount} from 'redom'
 import flyd from './flyd.js'
 import colours from './colour_data.json'
 import {Palette, Terminal} from './components.js'
+import {Kefir as K} from 'kefir'
+var s = K.constant('a')
+s.onValue(v => console.log(v))
+s.onValue(v => console.log(v))
 
 
 const head = el('header.h', 'tart')
@@ -10,11 +14,13 @@ const pal = el(Palette)
 const term = el(Terminal)
 const main = el('div.main', [pal, head, term, foot])
 
+pal.pills.action.onValue(v => console.log(v))
+
 // update with data
 var pillData = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
-flyd.combine((pillData) => {
-  pal.update({pillData})
-}, [pillData])
+// flyd.combine((pillData) => {
+//   pal.update({pillData})
+// }, [pillData])
 pal.update({hidden: false, pillData, colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
 
@@ -22,7 +28,7 @@ term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c
 mount(document.body, main)
 
 // schedule another update
-setTimeout(() => {
-  term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-  pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colours})
-}, 5000)
+// setTimeout(() => {
+//   term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
+//   pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colours})
+// }, 5000)

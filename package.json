@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "flyd": "^0.2.8",
+    "kefir": "^3.8.3",
     "redom": "^3.12.7"
   }
 }
