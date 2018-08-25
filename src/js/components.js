@@ -2,7 +2,6 @@ import {el, list, mount} from 'redom'
 import flyd from './flyd.js'
 import colours from './colour_data.json'
 import {selfie} from './selfie.js'
-import {Kefir as K} from 'kefir'
 
 
 class Button {
@@ -32,7 +31,6 @@ class Pill {
     self.onClick = flyd.stream()
     self.onActivate = self.onClick.map(ev => (ev.preventDefault(), self._idx), self.onClick)
     self.el.addEventListener('click', self.onClick)
-    self.action = K.fromEvents(self.el, 'click', ev => ({kind: 'click', value: self._idx}))
     self.update(props)
   }
 
@@ -56,7 +54,6 @@ class Pills {
     self.list = list(self.el, Pill)
     self.onActivate = flyd.stream()
     self._pool = []
-    self.action = K.pool()
     // flyd.on(ev => console.log('on:: ', ev), self.onActivate)
   }
 
@@ -72,19 +69,6 @@ class Pills {
       if (!pd[i].active)
         self.onActivate(i), pillData(pd.map((v, j) => (v.active = j == i, v)))
     }, ms)
-
-    // const kacts = self.list.views.map(el => el.action)
-    // kacts.forEach(s => self.action.plug(s))
-
-    // console.log(self._pool)
-    console.log(self.action._curSources)
-    self._pool.forEach(s => self.action.unplug(s))
-    self._pool = self.list.views.map(el => el.action)
-    self._pool.forEach(s => self.action.plug(s))
-    console.log(self.action._curSources)
-
-    // self.list.views.reduce((acc, el) => acc.set(el.action, el.action), self._pool)
-    // self.
     
   }
 }
