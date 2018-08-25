@@ -28,10 +28,28 @@ class Pill {
   constructor(props) {
     const self = this
     self.el = el('li.pill')
-    self.onClick = flyd.stream()
-    self.onActivate = self.onClick.map(ev => (ev.preventDefault(), self._idx), self.onClick)
-    self.el.addEventListener('click', self.onClick)
+
+    self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
     self.update(props)
+  }
+
+  _streams(connect=false) {
+    const self = this
+
+    if (connect)
+      self.el.addEventListener('click', self.action.deps[0])
+    else
+      self.el.removeEventListener('click', self.action.deps[0])
+  }
+
+  onmount() {
+    const self = this
+    self._streams(true)
+  }
+
+  onunmount() {
+    const self = this
+    self._streams(false)
   }
 
   update({active=null, text=null}={}, i) {
@@ -48,28 +66,25 @@ class Pill {
 }
 
 class Pills {
-  constructor() {
+  constructor(props={}) {
     const self = this
     self.el = el('ul.pills')
     self.list = list(self.el, Pill)
-    self.onActivate = flyd.stream()
-    self._pool = []
-    // flyd.on(ev => console.log('on:: ', ev), self.onActivate)
+    self._actionDeps = []
+    self.action = flyd.stream()
   }
 
   update({pillData}) {
     const self = this, pd = pillData()
     self.list.update(pd)
-    const acts = self.list.views.map(el => el.onActivate)
+    const acts = self.list.views.map(el => el.action)
     const ms = flyd.mergeN(acts.length, ...acts)
-
-    if (self._onActivate)
-      self._onActivate.deps.forEach(s => s.end()), self._onActivate.end(true)
-    self._onActivate = flyd.on(i => {
-      if (!pd[i].active)
-        self.onActivate(i), pillData(pd.map((v, j) => (v.active = j == i, v)))
-    }, ms)
     
+    self._actionDeps.forEach(s => s.end(true))
+    self._actionDeps = [flyd.on(ev => {
+      if (!pd[ev.idx].active)
+        self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
+    }, ms), ms]
   }
 }
 

@@ -14,6 +14,7 @@ const main = el('div.main', [pal, head, term, foot])
 var pillData = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
 flyd.combine((pillData) => {
   pal.update({pillData})
+  // console.dir(pillData())
 }, [pillData])
 pal.update({hidden: false, pillData, colours})
 term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}]})
@@ -22,7 +23,7 @@ term.update({lineData: [{text:'a', style:null}, {text:'b', style:null}, {text:'c
 mount(document.body, main)
 
 // schedule another update
-// setTimeout(() => {
-//   term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-//   pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colours})
-// }, 5000)
+setTimeout(() => {
+  term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
+  pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colours})
+}, 5000)
