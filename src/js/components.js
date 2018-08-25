@@ -72,19 +72,23 @@ class Pills {
     self.list = list(self.el, Pill)
     self._actionDeps = []
     self.action = flyd.stream()
+    self.update(props)
   }
 
   update({pillData}) {
-    const self = this, pd = pillData()
-    self.list.update(pd)
-    const acts = self.list.views.map(el => el.action)
-    const ms = flyd.mergeN(acts.length, ...acts)
-    
-    self._actionDeps.forEach(s => s.end(true))
-    self._actionDeps = [flyd.on(ev => {
-      if (!pd[ev.idx].active)
-        self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
-    }, ms), ms]
+    if (pillData) {
+      const self = this
+      const pd = pillData()
+      self.list.update(pd)
+      const acts = self.list.views.map(el => el.action)
+      const ms = flyd.mergeN(acts.length, ...acts)
+      
+      self._actionDeps.forEach(s => s.end(true))
+      self._actionDeps = [flyd.on(ev => {
+        if (!pd[ev.idx].active)
+          self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
+      }, ms), ms]
+    }
   }
 }
 
