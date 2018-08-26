@@ -103,7 +103,7 @@ class Swatch {
     this.update(d)
   }
 
-  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}) {
+  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}, i, data) {
     this.colour.style.backgroundColor = hexString
     this.name.textContent = name
     this.value.textContent = `${colorId} - ${hexString}`
@@ -125,7 +125,7 @@ class Palette {
     // this.el.addEventListener('click', ev => this.update({hidden:true}))
   }
 
-  update({hidden=null, pillData=null, colours=null}={}) {
+  update({hidden=null, pillData=null, colourData=null}={}) {
     hidden = hidden != null ? hidden : this.hidden != null ? this.hidden : false
     this.hidden = hidden
 
@@ -137,8 +137,8 @@ class Palette {
     if (pillData != null)
       this.pills.update({pillData})
     
-    if (colours != null)
-      this.swatches.update(colours)
+    if (colourData != null)
+      this.swatches.update(colourData())
   }
 }
 
@@ -210,8 +210,8 @@ class Terminal {
   }
 
   update({lineData}) {
-    this.lineA.update(lineData)
-    this.lineB.update(lineData)
+    this.lineA.update(lineData())
+    this.lineB.update(lineData())
   }
 }
 
