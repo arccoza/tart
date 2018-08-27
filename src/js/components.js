@@ -4,6 +4,12 @@ import colours from './colour_data.json'
 import {selfie} from './selfie.js'
 
 
+// Helper function to bind and unbind events to/from streams.
+function streamEvents(yes, target, events, stream) {
+  const mod = yes ? target.addEventListener : target.removeEventListener
+  events.forEach(type => mod.call(target, type, stream))
+}
+
 class Button {
   constructor() {
     this.el = el('div.button')
@@ -28,28 +34,18 @@ class Pill {
   constructor(props) {
     const self = this
     self.el = el('li.pill')
-
     self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
     self.update(props)
   }
 
-  _streams(connect=false) {
-    const self = this
-
-    if (connect)
-      self.el.addEventListener('click', self.action.deps[0])
-    else
-      self.el.removeEventListener('click', self.action.deps[0])
-  }
-
   onmount() {
     const self = this
-    self._streams(true)
+    streamEvents(true, self.el, ['click'], self.action.deps[0])
   }
 
   onunmount() {
     const self = this
-    self._streams(false)
+    streamEvents(false, self.el, ['click'], self.action.deps[0])
   }
 
   update({active=null, text=null}={}, i) {
