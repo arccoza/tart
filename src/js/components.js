@@ -126,7 +126,7 @@ class Palette {
   }
 
   update({hidden=null, pillData=null, colourData=null}={}) {
-    hidden = hidden != null ? hidden : this.hidden != null ? this.hidden : false
+    hidden = hidden != null ? hidden : this.hidden != null ? this.hidden : null
     this.hidden = hidden
 
     if (hidden === true)
