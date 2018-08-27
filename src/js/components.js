@@ -184,9 +184,9 @@ class Line {
     self.el = list(`ul.${cls}`, Part)
   }
 
-  update(...d) {
+  update({lineData}) {
     const self = this
-    self.el.update(...d)
+    self.el.update(lineData())
   }
 }
 
@@ -206,8 +206,8 @@ class Terminal {
   }
 
   update({lineData}) {
-    this.lineA.update(lineData())
-    this.lineB.update(lineData())
+    this.lineA.update({lineData})
+    this.lineB.update({lineData})
   }
 }
 
