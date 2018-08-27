@@ -180,13 +180,13 @@ class Part {
 
 class Line {
   constructor({cls}={cls:'ps1'}) {
-    this.el = list(`ul.${cls}`, Part)
-    
-    selfie(this)
+    const self = this
+    self.el = list(`ul.${cls}`, Part)
   }
 
-  update({el}, ...d) {
-    el.update(...d)
+  update(...d) {
+    const self = this
+    self.el.update(...d)
   }
 }
 
