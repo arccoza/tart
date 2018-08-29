@@ -79,23 +79,26 @@ class Pill {
 }
 
 class Pills {
-  constructor(props={}) {
+  constructor(props={active:0}) {
     const self = this
     self.el = el('ul.pills')
     self.list = list(self.el, Pill)
     self.action = flyd.stream()
+    self.active = flyd.stream(props.active)
     self.update(props)
   }
 
   update({pillData}) {
     if (pillData) {
       const self = this
+      self.active(pillData().length - 1 < self.active() ? pillData().length - 1 : self.active())
+      pillData().forEach((v, i) => v.active = self.active() == i)
       self.list.update(pillData())
       const acts = self.list.views.map(el => el.action)
 
       plugStreams('diff', self.action, ev => {
         if (!pillData()[ev.idx].active)
-          self.action(ev), pillData(pillData().map((v, i) => (v.active = i == ev.idx, v)))
+          self.action(ev), self.active(ev.idx), self.update({pillData})
       }, acts)
     }
   }
