@@ -2,6 +2,7 @@ import {el, list, mount} from 'redom'
 import flyd from './flyd.js'
 import colours from './colour_data.json'
 import {selfie} from './selfie.js'
+import mergeAll from 'flyd/module/mergeall'
 
 
 // Helper function to bind and unbind events to/from streams.
@@ -61,12 +62,19 @@ class Pill {
   }
 }
 
-const xor = (a, b) => (( a && !b ) || ( !a && b ))
-const mergeAll = require('flyd/module/mergeall')
-function plugStreams(yes, plugs, fn, upStreams) {
-  const add = s => (plugs.set(s, flyd.on(fn, s)))
-  const rem = s => (plugs.get(s).end(), plugs.delete(s))
-  upStreams.filter(s => xor(yes, plugs.has(s))).forEach(s => (yes ? add(s) : rem(s)))
+function plugStreams(mode, plugs, fn, upStreams) {
+  const m = mode == 'add' ? 0 : mode == 'rem' ? 1 : mode == 'diff' ? 2 : mode
+  const nop = () => null
+  const add = m == 0 || m == 2 ? s => (plugs.set(s, flyd.on(fn, s))) : nop
+  const rem = m == 1 || m == 2 ? s => (plugs.get(s).end(), plugs.delete(s)) : nop
+
+  if (m == 2) {
+    let toAdd = upStreams.reduce((acc, s) => acc.set(s, s), new Map())
+    plugs.forEach((v, k) => !toAdd.has(k) ? rem(k) : toAdd.delete(k))
+    toAdd.forEach(s => add(s))
+  }
+  else
+    upStreams.forEach(s => plugs.has(s) ? rem(s) : add(s))
 }
 
 class Pills {
@@ -77,28 +85,19 @@ class Pills {
     self._actionDeps = []
     self._plugs = new Map()
     self.action = flyd.stream()
-    console.dir(self.action)
     self.update(props)
   }
 
   update({pillData}) {
     if (pillData) {
       const self = this
-      const pd = pillData()
-      self.list.update(pd)
+      self.list.update(pillData())
       const acts = self.list.views.map(el => el.action)
-      // const ms = flyd.mergeN(acts.length, ...acts)
 
-      plugStreams(true, self._plugs, ev => {
-        if (!pd[ev.idx].active)
-          self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
+      plugStreams('diff', self._plugs, ev => {
+        if (!pillData()[ev.idx].active)
+          self.action(ev), pillData(pillData().map((v, i) => (v.active = i == ev.idx, v)))
       }, acts)
-      
-      // self._actionDeps.forEach(s => s.end(true))
-      // self._actionDeps = [flyd.on(ev => {
-      //   if (!pd[ev.idx].active)
-      //     self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
-      // }, ms), ms]
     }
   }
 }
