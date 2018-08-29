@@ -142,37 +142,19 @@ class Part {
   constructor(props={}) {
     const self = this
     self.el = el('li.part.part--drag', {draggable: false})
-    // self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
-    var obs = self.obs = {}
-    self.wanted = flyd.stream(props.wanted)
-    self.mount = flyd.stream()
-    self.action = flyd.stream()
-    self.actions = flyd.combine((m, w, me, ch) => {
-      console.log('--->', m(), w())
-      if (m() == 'mount' && w()) {
-        w().filter(type => !obs[type]).forEach(type => {
-          console.log(type)
-          var s = obs[type] = flyd.stream()
-          self.el.addEventListener(type, s)
-          flyd.on(v => self.action((v.idx = self._idx, v)), s)
-        })
-      }
-
-      return obs
-    }, [self.mount, self.wanted])
+    self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
     self._draggable()
+    self.update(props)
   }
 
   onmount() {
     const self = this
-    // streamEvents(true, self.el, ['click'], self.action.deps[0])
-    self.mount('mount')
+    streamEvents(true, self.el, ['click'], self.action.deps[0])
   }
 
   onunmount() {
     const self = this
-    // streamEvents(false, self.el, ['click'], self.action.deps[0])
-    self.mount('unmount')
+    streamEvents(false, self.el, ['click'], self.action.deps[0])
   }
 
   _draggable() {
@@ -203,12 +185,11 @@ class Part {
     })
   }
 
-  update({text, style, wanted}, i) {
+  update({text, style}={}, i) {
     const self = this
     self._idx = i
     // self.el.style = style
     self.el.textContent = text
-    self.wanted(wanted)
   }
 }
 
