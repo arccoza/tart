@@ -83,8 +83,6 @@ class Pills {
     const self = this
     self.el = el('ul.pills')
     self.list = list(self.el, Pill)
-    self._actionDeps = []
-    self._plugs = new Map()
     self.action = flyd.stream()
     self.update(props)
   }
