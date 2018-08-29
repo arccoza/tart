@@ -79,18 +79,19 @@ class Pill {
 }
 
 class Pills {
-  constructor(props={active:0}) {
+  constructor({active=0, pillData=null}={}) {
     const self = this
     self.el = el('ul.pills')
     self.list = list(self.el, Pill)
+    // self.state ={pillData}
     self.action = flyd.stream()
-    self.active = flyd.stream(props.active)
-    self.update(props)
+    self.active = flyd.stream(active)
+    // self.update({pillData})
   }
 
   update({pillData}) {
+    const self = this
     if (pillData) {
-      const self = this
       self.active(pillData().length - 1 < self.active() ? pillData().length - 1 : self.active())
       pillData().forEach((v, i) => v.active = self.active() == i)
       self.list.update(pillData())
