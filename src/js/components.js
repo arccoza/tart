@@ -11,6 +11,22 @@ function streamEvents(yes, target, events, stream) {
   events.forEach(type => mod.call(target, type, stream))
 }
 
+function plugStreams(mode, s, fn, upStreams) {
+  const plugs = s._plugs || (s._plugs = new Map())
+  const m = mode == 'add' ? 0 : mode == 'rem' ? 1 : mode == 'diff' ? 2 : mode
+  const nop = () => null
+  const add = m == 0 || m == 2 ? s => (plugs.set(s, flyd.on(fn, s))) : nop
+  const rem = m == 1 || m == 2 ? s => (plugs.get(s).end(), plugs.delete(s)) : nop
+
+  if (m == 2) {
+    let toAdd = upStreams.reduce((acc, s) => acc.set(s, s), new Map())
+    plugs.forEach((v, k) => !toAdd.has(k) ? rem(k) : toAdd.delete(k))
+    toAdd.forEach(s => add(s))
+  }
+  else
+    upStreams.forEach(s => plugs.has(s) ? rem(s) : add(s))
+}
+
 class Button {
   constructor() {
     this.el = el('div.button')
@@ -62,21 +78,6 @@ class Pill {
   }
 }
 
-function plugStreams(mode, plugs, fn, upStreams) {
-  const m = mode == 'add' ? 0 : mode == 'rem' ? 1 : mode == 'diff' ? 2 : mode
-  const nop = () => null
-  const add = m == 0 || m == 2 ? s => (plugs.set(s, flyd.on(fn, s))) : nop
-  const rem = m == 1 || m == 2 ? s => (plugs.get(s).end(), plugs.delete(s)) : nop
-
-  if (m == 2) {
-    let toAdd = upStreams.reduce((acc, s) => acc.set(s, s), new Map())
-    plugs.forEach((v, k) => !toAdd.has(k) ? rem(k) : toAdd.delete(k))
-    toAdd.forEach(s => add(s))
-  }
-  else
-    upStreams.forEach(s => plugs.has(s) ? rem(s) : add(s))
-}
-
 class Pills {
   constructor(props={}) {
     const self = this
@@ -94,7 +95,7 @@ class Pills {
       self.list.update(pillData())
       const acts = self.list.views.map(el => el.action)
 
-      plugStreams('diff', self._plugs, ev => {
+      plugStreams('diff', self.action, ev => {
         if (!pillData()[ev.idx].active)
           self.action(ev), pillData(pillData().map((v, i) => (v.active = i == ev.idx, v)))
       }, acts)
