@@ -61,13 +61,23 @@ class Pill {
   }
 }
 
+const xor = (a, b) => (( a && !b ) || ( !a && b ))
+const mergeAll = require('flyd/module/mergeall')
+function plugStreams(yes, plugs, fn, upStreams) {
+  const add = s => (plugs.set(s, flyd.on(fn, s)))
+  const rem = s => (plugs.get(s).end(), plugs.delete(s))
+  upStreams.filter(s => xor(yes, plugs.has(s))).forEach(s => (yes ? add(s) : rem(s)))
+}
+
 class Pills {
   constructor(props={}) {
     const self = this
     self.el = el('ul.pills')
     self.list = list(self.el, Pill)
     self._actionDeps = []
+    self._plugs = new Map()
     self.action = flyd.stream()
+    console.dir(self.action)
     self.update(props)
   }
 
@@ -77,13 +87,18 @@ class Pills {
       const pd = pillData()
       self.list.update(pd)
       const acts = self.list.views.map(el => el.action)
-      const ms = flyd.mergeN(acts.length, ...acts)
-      
-      self._actionDeps.forEach(s => s.end(true))
-      self._actionDeps = [flyd.on(ev => {
+      // const ms = flyd.mergeN(acts.length, ...acts)
+
+      plugStreams(true, self._plugs, ev => {
         if (!pd[ev.idx].active)
           self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
-      }, ms), ms]
+      }, acts)
+      
+      // self._actionDeps.forEach(s => s.end(true))
+      // self._actionDeps = [flyd.on(ev => {
+      //   if (!pd[ev.idx].active)
+      //     self.action(ev), pillData(pd.map((v, i) => (v.active = i == ev.idx, v)))
+      // }, ms), ms]
     }
   }
 }

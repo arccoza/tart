@@ -11,14 +11,14 @@ const term = el(Terminal)
 const main = el('div.main', [pal, head, term, foot])
 
 // update with data
-var lineData = flyd.stream([{text:'a', style:null, wanted: ['click']}, {text:'b', style:null}, {text:'c', style:null}])
+var lineData = flyd.stream([{text:'a', style:null}, {text:'b', style:null}, {text:'c', style:null}])
 var pillData = flyd.stream([{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
 var colourData = flyd.stream(colours)
 
 // lineData.redom = term, pillData.redom = pal, colourData.redom = pal
 flyd.on(v => console.log(v), pal.pills.action)
 lineData.map(v => term.update({lineData}))
-pillData.map(v => pal.update({hidden:true, pillData}))
+pillData.map(v => pal.update({hidden:false, pillData}))
 colourData.map(v => pal.update({colourData}))
 
 // flyd.combine((lineData, pillData, colourData, me, ch) => {
