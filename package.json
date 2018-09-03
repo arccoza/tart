@@ -10,9 +10,11 @@
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "flyd": "^0.2.8",
+    "freezer-js": "^0.14.1",
     "redom": "^3.12.7"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3"
+    "babel-core": "^6.26.3",
+    "cssnano": "^4.1.0"
   }
 }
