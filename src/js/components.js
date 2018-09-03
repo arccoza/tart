@@ -58,6 +58,7 @@ class Pill {
 
   onmount() {
     const self = this, {_subs:subs} = this
+    // TODO: Figure out why onmount triggers twice.
     // console.log('onmount')
     self._next.forEach(s => subs.has(s) ? null : subs.set(s, flyd.on(s, self.action)))
     streamEvents(true, self.el, ['click'], self.action.deps[0])
@@ -98,19 +99,9 @@ class Pills {
   }
 
   update({pillData}) {
-    console.log(pillData)
     const self = this
-    if (pillData) {
-      // self.active(pillData().length - 1 < self.active() ? pillData().length - 1 : self.active())
-      // pillData().forEach((v, i) => v.active = self.active() == i)
+    if (pillData)
       self.list.update(pillData, {tag: pillData._tag})
-      // const acts = self.list.views.map(el => el.action)
-
-      // plugStreams('diff', self.action, ev => {
-      //   if (!pillData()[ev.idx].active)
-      //     self.action(ev), self.active(ev.idx), self.update({pillData})
-      // }, acts)
-    }
   }
 }
 
