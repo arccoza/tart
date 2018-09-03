@@ -221,11 +221,13 @@ body, .main {
 }
 
 .pill:first-child {
-  border-radius: 1000px 0 0 1000px;
+  border-top-left-radius: 1000px;
+  border-bottom-left-radius: 1000px;
 }
 
 .pill:last-child {
-  border-radius: 0 1000px 1000px 0;
+  border-top-right-radius: 1000px;
+  border-bottom-right-radius: 1000px;
 }
 
 .pill--active {
