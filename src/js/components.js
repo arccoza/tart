@@ -48,26 +48,32 @@ class Button {
 }
 
 class Pill {
-  constructor(props) {
+  constructor({nextAction}, {active, text}={}, ...args) {
     const self = this
     self.el = el('li.pill')
-    self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
-    self.update(props)
+    self._next = [nextAction]
+    self._subs = new Map()
+    self.action = flyd.stream().map(evt => ({kind: 'SELECT', idx: self._idx, tag: self._tag, evt}))
   }
 
   onmount() {
-    const self = this
+    const self = this, {_subs:subs} = this
+    // console.log('onmount')
+    self._next.forEach(s => subs.has(s) ? null : subs.set(s, flyd.on(s, self.action)))
     streamEvents(true, self.el, ['click'], self.action.deps[0])
   }
 
   onunmount() {
     const self = this
+    self._subs.forEach(s => s.end())
     streamEvents(false, self.el, ['click'], self.action.deps[0])
   }
 
-  update({active=null, text=null}={}, i) {
+  update({active=null, text=null}={}, i, v, {tag}) {
     const self = this
     self._idx = i
+    self._tag = tag
+
     if (active)
       self.el.classList.add('pill--active')
     else
@@ -79,28 +85,31 @@ class Pill {
 }
 
 class Pills {
-  constructor({active=0, pillData=null}={}) {
+  constructor({pillData}) {
     const self = this
+    self.action = flyd.stream().map(v => (v.pch = self.patch, v))
     self.el = el('ul.pills')
-    self.list = list(self.el, Pill)
-    // self.state ={pillData}
-    self.action = flyd.stream()
-    self.active = flyd.stream(active)
-    // self.update({pillData})
+    self.list = list(self.el, Pill, null, {nextAction: self.action.deps[0]})
+  }
+
+  patch(act, data) {
+    if (act.kind == 'SELECT')
+      return data.map((o, i) => (o.active = i == act.idx, o))
   }
 
   update({pillData}) {
+    console.log(pillData)
     const self = this
     if (pillData) {
-      self.active(pillData().length - 1 < self.active() ? pillData().length - 1 : self.active())
-      pillData().forEach((v, i) => v.active = self.active() == i)
-      self.list.update(pillData())
-      const acts = self.list.views.map(el => el.action)
+      // self.active(pillData().length - 1 < self.active() ? pillData().length - 1 : self.active())
+      // pillData().forEach((v, i) => v.active = self.active() == i)
+      self.list.update(pillData, {tag: pillData._tag})
+      // const acts = self.list.views.map(el => el.action)
 
-      plugStreams('diff', self.action, ev => {
-        if (!pillData()[ev.idx].active)
-          self.action(ev), self.active(ev.idx), self.update({pillData})
-      }, acts)
+      // plugStreams('diff', self.action, ev => {
+      //   if (!pillData()[ev.idx].active)
+      //     self.action(ev), self.active(ev.idx), self.update({pillData})
+      // }, acts)
     }
   }
 }
@@ -124,12 +133,12 @@ class Swatch {
 }
 
 class Palette {
-  constructor() {
+  constructor({pillData}) {
     this.el = el('div.modal.modal--hidden',
       el('div.palette',
         el('header.palette__h',
           // el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
-          this.pills = el(Pills)
+          this.pills = el(Pills, {pillData})
         ),
         this.swatches = list('ul.palette__swatches', Swatch),
       )
@@ -161,7 +170,7 @@ class Part {
     self.el = el('li.part.part--drag', {draggable: false})
     self.action = flyd.stream().map(ev => (ev.idx = self._idx, ev))
     self._draggable()
-    self.update(props)
+    // self.update(props)
   }
 
   onmount() {
