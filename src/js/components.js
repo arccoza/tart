@@ -86,11 +86,24 @@ class Pill {
 }
 
 class Pills {
-  constructor({pillData}) {
+  constructor({nextAction}) {
     const self = this
     self.action = flyd.stream().map(v => (v.pch = self.patch, v))
+    self._next = [nextAction]
+    self._subs = new Map()
+
     self.el = el('ul.pills')
     self.list = list(self.el, Pill, null, {nextAction: self.action.deps[0]})
+  }
+
+  onmount() {
+    const self = this, {_subs:subs} = this
+    self._next.forEach(s => subs.has(s) ? null : subs.set(s, flyd.on(s, self.action)))
+  }
+
+  onunmount() {
+    const self = this
+    self._subs.forEach(s => s.end())
   }
 
   patch(act, data) {
@@ -101,41 +114,62 @@ class Pills {
   update({pillData}) {
     const self = this
     if (pillData)
-      self.list.update(pillData, {tag: pillData._tag})
+      self.list.update(pillData.val, {tag: pillData.tag})
   }
 }
 
 class Swatch {
-  constructor(d) {
-    this.el = el('li.swatch',
-      this.colour = el('div.swatch__colour'),
-      this.name = el('div.swatch__name'),
-      this.value = el('div.swatch__value')
-    )
+  constructor({nextAction}) {
+    const self = this
+    self.action = flyd.stream().map(evt => ({kind: 'SELECT', idx: self._idx, tag: self._tag, evt}))
+    self._next = [nextAction]
+    self._subs = new Map()
 
-    this.update(d)
+    self.el = el('li.swatch',
+      self.colour = el('div.swatch__colour'),
+      self.name = el('div.swatch__name'),
+      self.value = el('div.swatch__value')
+    )
   }
 
-  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}, i, data) {
-    this.colour.style.backgroundColor = hexString
-    this.name.textContent = name
-    this.value.textContent = `${colorId} - ${hexString}`
+  onmount() {
+    const self = this, {_subs:subs} = this
+    self._next.forEach(s => subs.has(s) ? null : subs.set(s, flyd.on(s, self.action)))
+    streamEvents(true, self.el, ['click'], self.action.deps[0])
+  }
+
+  onunmount() {
+    const self = this
+    self._subs.forEach(s => s.end())
+    streamEvents(false, self.el, ['click'], self.action.deps[0])
+  }
+
+  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}, i, v, {tag}) {
+    const self = this
+    self._idx = i
+    self._tag = tag
+    self.colour.style.backgroundColor = hexString
+    self.name.textContent = name
+    self.value.textContent = `${colorId} - ${hexString}`
   }
 }
 
 class Palette {
   constructor({pillData}) {
-    this.el = el('div.modal.modal--hidden',
+    const self = this
+    self.action = flyd.stream()
+
+    self.el = el('div.modal.modal--hidden',
       el('div.palette',
         el('header.palette__h',
           // el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
-          this.pills = el(Pills, {pillData})
+          self.pills = el(Pills, {nextAction: self.action})
         ),
-        this.swatches = list('ul.palette__swatches', Swatch),
+        self.swatches = list('ul.palette__swatches', Swatch, null, {nextAction: self.action}),
       )
     )
 
-    // this.el.addEventListener('click', ev => this.update({hidden:true}))
+    // self.el.addEventListener('click', ev => self.update({hidden:true}))
   }
 
   update({hidden=null, pillData=null, colourData=null}={}) {
@@ -151,7 +185,7 @@ class Palette {
       this.pills.update({pillData})
     
     if (colourData != null)
-      this.swatches.update(colourData())
+      this.swatches.update(colourData.val, {tag: colourData.tag})
   }
 }
 
@@ -218,7 +252,7 @@ class Line {
 
   update({lineData}) {
     const self = this
-    self.el.update(lineData())
+    self.el.update(lineData)
   }
 }
 

@@ -43,17 +43,20 @@ const main = el('div.main', [pal, head, term, foot])
 
 // update with data
 
-flyd.on(v => console.log(v), pillData)
-// flyd.immediate(
-//   flyd.combine((...args) => {
-//     var [l, p, c, me, ch] = args
-//     console.log(l(), p(), c())
-//   }, [lineData, pillData, colourData])
-// )
+// flyd.on(v => console.log(v), pillData)
+flyd.immediate(
+  flyd.combine((...args) => {
+    var [l, p, c, me, ch] = args
+    // console.log(l(), p(), c())
+    term.update({lineData: l()})
+    pal.update({pillData: p(), colourData: c()})
+  }, [lineData, pillData.map(val => ({tag:'PAL_FGBG', val})), colourData.map(val => ({tag:'PAL_CLRS', val}))])
+)
 
 
 // lineData.redom = term, pillData.redom = pal, colourData.redom = pal
-flyd.on(v => console.log(v), pal.pills.action)
+flyd.on(v => console.log(v), pal.action)
+pal.update({hidden:false})
 // lineData.map(v => term.update({lineData}))
 // pillData.map(v => pal.update({hidden:false, pillData:v}))
 // // pal.update({hidden:false, pillData})
@@ -75,13 +78,13 @@ flyd.on(v => console.log(v), pal.pills.action)
 mount(document.body, main)
 
 // schedule another update
-setTimeout(() => {
-  // term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
-  // lineData([{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}])
-  // pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colourData})
-  // pillData([...pillData(), {text:'Wha2?'}])
-  // pillData([...pillData().filter((v, i) => i != 1)])
+// setTimeout(() => {
+//   // term.update({lineData: [{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}]})
+//   // lineData([{text:'e', style:null}, {text:'f', style:null}, {text:'g ', style:null}])
+//   // pal.update({hidden: false, pillData: pillData([...pillData(), {text:'Wha2?'}]), colourData})
+//   // pillData([...pillData(), {text:'Wha2?'}])
+//   // pillData([...pillData().filter((v, i) => i != 1)])
 
-  state = state.set('pillData', [{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
+//   state = state.set('pillData', [{text:'Foreground', active:true}, {text:'Background'}, {text:'Wha?'}])
 
-}, 5000)
+// }, 5000)
