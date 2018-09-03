@@ -253,16 +253,24 @@ body, .main {
   background: #222;
   list-style: none;
   /*border: 1px solid #333;*/
+  border: 1px solid #222;
   border-radius: 16px;
   margin: 1em;
   overflow: hidden;
   text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.swatch--active {
+  background-color: #eee;
+  color: #222;
 }
 
 .swatch__colour {
   height: 2em;
-  border: 1px solid #222;
-  border-radius: 16px;
+  /*border: 1px solid #222;*/
+  /*border-radius: 16px;*/
 }
 
 .swatch__name, .swatch__value {

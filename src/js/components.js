@@ -108,7 +108,7 @@ class Pills {
 
   patch(act, data) {
     if (act.kind == 'SELECT')
-      return data.map((o, i) => (o.active = i == act.idx, o))
+      return data.map((o, i) => ({...o, ...{active: i == act.idx}}))
   }
 
   update({pillData}) {
@@ -144,32 +144,41 @@ class Swatch {
     streamEvents(false, self.el, ['click'], self.action.deps[0])
   }
 
-  update({colorId='7', name='Grey', hexString='#c0c0c0'}={}, i, v, {tag}) {
+  update({colorId='0', name='Black', hexString='#000000', active=false}={}, i, v, {tag}) {
     const self = this
     self._idx = i
     self._tag = tag
     self.colour.style.backgroundColor = hexString
     self.name.textContent = name
     self.value.textContent = `${colorId} - ${hexString}`
+    if (active)
+      self.el.classList.add('swatch--active')
+    else
+      self.el.classList.remove('swatch--active')
   }
 }
 
 class Palette {
   constructor({pillData}) {
     const self = this
-    self.action = flyd.stream()
+    self.action = flyd.stream().map(v => (v.pch = self.patch, v))
 
     self.el = el('div.modal.modal--hidden',
       el('div.palette',
         el('header.palette__h',
           // el('ul.pills', el('li.pill.pill--selected', 'Foreground'), el('li.pill', 'Background')),
-          self.pills = el(Pills, {nextAction: self.action})
+          self.pills = el(Pills, {nextAction: self.action.deps[0]})
         ),
-        self.swatches = list('ul.palette__swatches', Swatch, null, {nextAction: self.action}),
+        self.swatches = list('ul.palette__swatches', Swatch, null, {nextAction: self.action.deps[0]}),
       )
     )
 
     // self.el.addEventListener('click', ev => self.update({hidden:true}))
+  }
+
+  patch(act, data) {
+    if (act.kind == 'SELECT')
+      return data.map((o, i) => ({...o, ...{active: i == act.idx}}))
   }
 
   update({hidden=null, pillData=null, colourData=null}={}) {

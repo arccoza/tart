@@ -1,6 +1,7 @@
 import {el, list, mount} from 'redom'
 import flyd from './flyd.js'
 import ffilter from 'flyd/module/filter'
+import fmergeAll from 'flyd/module/mergeall'
 import colours from './colour_data.json'
 import {Palette, Terminal} from './components.js'
 import Freezer from 'freezer-js'
@@ -52,6 +53,19 @@ flyd.immediate(
     pal.update({pillData: p(), colourData: c()})
   }, [lineData, pillData.map(val => ({tag:'PAL_FGBG', val})), colourData.map(val => ({tag:'PAL_CLRS', val}))])
 )
+
+flyd.on(act => {
+  var state = ds.get()
+  
+  switch (act.tag) {
+    case 'PAL_FGBG':
+      state.set('pillData', act.pch(act, state.pillData))
+      break
+    case 'PAL_CLRS':
+      state.set('colourData', act.pch(act, state.colourData))
+      break
+  }
+}, pal.action)
 
 
 // lineData.redom = term, pillData.redom = pal, colourData.redom = pal
